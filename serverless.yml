@@ -1,11 +1,25 @@
 service: serverless-langchain-slackbot
 frameworkVersion: '3'
 
+useDotenv: true
+
 provider:
   name: aws
   runtime: python3.10
   region: ap-northeast-1
 
 functions:
-  hello:
-    handler: handler.hello
+  app:
+    handler: app.handler
+    url: true
+    environment:
+      OPENAI_API_KEY: ${env:OPENAI_API_KEY}
+      SLACK_SIGNING_SECRET: ${env:SLACK_SIGNING_SECRET}
+      SLACK_BOT_TOKEN: ${env:SLACK_BOT_TOKEN}
+
+plugins:
+  - serverless-python-requirements
+
+package:
+  patterns:
+    - '!.venv/**'
