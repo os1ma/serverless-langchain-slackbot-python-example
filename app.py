@@ -9,7 +9,9 @@ from slack_bolt.adapter.aws_lambda import SlackRequestHandler
 CHAT_UPDATE_INTERVAL_SEC = 1
 
 SlackRequestHandler.clear_all_log_handlers()
-logging.basicConfig(format="%(asctime)s %(message)s", level=logging.INFO)
+logging.basicConfig(
+    format="%(asctime)s [%(levelname)s] %(message)s", level=logging.INFO
+)
 logger = logging.getLogger(__name__)
 
 app = App(
