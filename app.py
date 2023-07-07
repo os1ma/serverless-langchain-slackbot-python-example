@@ -2,8 +2,11 @@ import logging
 import os
 import time
 
+import openai
 from slack_bolt import App
 from slack_bolt.adapter.aws_lambda import SlackRequestHandler
+
+CHAT_UPDATE_INTERVAL_SEC = 1
 
 SlackRequestHandler.clear_all_log_handlers()
 logging.basicConfig(format="%(asctime)s %(message)s", level=logging.INFO)
@@ -16,19 +19,44 @@ app = App(
 )
 
 
+def chat(say, body):
+    logger.info("chat start")
+
+    event = body["event"]
+    channel = event["channel"]
+    prompt = event["text"]
+
+    say_response = say("Thinking...")
+    ts = say_response["ts"]
+
+    messages = [
+        {"role": "user", "content": prompt},
+    ]
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo", messages=messages, temperature=0, stream=True
+    )
+
+    message = ""
+    last_send_time = time.time()
+
+    for chunk in response:
+        delta = chunk["choices"][0]["delta"].get("content", "")
+        message += delta
+
+        now = time.time()
+        if now - last_send_time > CHAT_UPDATE_INTERVAL_SEC:
+            last_send_time = now
+            app.client.chat_update(channel=channel, ts=ts, text=f"{message}...")
+
+    app.client.chat_update(channel=channel, ts=ts, text=message)
+    logger.info("chat end")
+
+
 def just_ack(ack):
     ack()
 
 
-def run_long_process(say, body):
-    logger.info("sleeping...")
-    say("sleeping...")
-    time.sleep(5)
-    logger.info("sleep finished")
-    say("sleep finished")
-
-
-app.event("app_mention")(ack=just_ack, lazy=[run_long_process])
+app.event("app_mention")(ack=just_ack, lazy=[chat])
 
 
 def handler(event, context):
