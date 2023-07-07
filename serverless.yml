@@ -12,14 +12,28 @@ functions:
   app:
     handler: app.handler
     url: true
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - lambda:InvokeFunction
+          - lambda:InvokeAsync
+        # Resourceはもっと限定するのが望ましい
+        Resource: "*"
     environment:
       OPENAI_API_KEY: ${env:OPENAI_API_KEY}
       SLACK_SIGNING_SECRET: ${env:SLACK_SIGNING_SECRET}
       SLACK_BOT_TOKEN: ${env:SLACK_BOT_TOKEN}
+    layers:
+      - Ref: PythonRequirementsLambdaLayer
 
 plugins:
   - serverless-python-requirements
+  - serverless-iam-roles-per-function
 
 package:
   patterns:
     - '!.venv/**'
+
+custom:
+  pythonRequirements:
+    layer: true
