@@ -7,18 +7,19 @@ provider:
   name: aws
   runtime: python3.10
   region: ap-northeast-1
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - lambda:InvokeFunction
+            - lambda:InvokeAsync
+          Resource: "*"
 
 functions:
   app:
     handler: app.handler
     url: true
-    iamRoleStatements:
-      - Effect: "Allow"
-        Action:
-          - lambda:InvokeFunction
-          - lambda:InvokeAsync
-        # Resourceはもっと限定するのが望ましい
-        Resource: "*"
     environment:
       OPENAI_API_KEY: ${env:OPENAI_API_KEY}
       SLACK_SIGNING_SECRET: ${env:SLACK_SIGNING_SECRET}
@@ -28,7 +29,6 @@ functions:
 
 plugins:
   - serverless-python-requirements
-  - serverless-iam-roles-per-function
 
 package:
   patterns:

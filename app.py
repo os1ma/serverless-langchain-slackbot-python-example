@@ -5,7 +5,7 @@ from slack_bolt import App
 from slack_bolt.adapter.aws_lambda import SlackRequestHandler
 
 SlackRequestHandler.clear_all_log_handlers()
-logging.basicConfig(format="%(asctime)s %(message)s", level=logging.DEBUG)
+logging.basicConfig(format="%(asctime)s %(message)s", level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = App(
@@ -14,23 +14,19 @@ app = App(
     process_before_response=True
 )
 
-def respond_to_slack_within_3_seconds(body, ack):
-    text = body.get("text")
-    if text is None or len(text) == 0:
-        ack(":x: Usage: /start-process (description here)")
-    else:
-        ack(f"Accepted! (task: {body['text']})")
+def just_ack(ack):
+    ack()
 
 import time
-def run_long_process(respond, body):
-    logger.info("run_long_process called")
+def run_long_process(say, body):
     logger.info("sleeping...")
+    say("sleeping...")
     time.sleep(5)
     logger.info("sleep finished")
-    respond(f"Completed! (task: {body['text']})")
+    say("sleep finished")
 
 app.event("app_mention")(
-    ack=respond_to_slack_within_3_seconds,
+    ack=just_ack,
     lazy=[run_long_process]
 )
 
