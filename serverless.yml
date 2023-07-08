@@ -14,11 +14,12 @@ provider:
           Action:
             - lambda:InvokeFunction
             - lambda:InvokeAsync
-          Resource: "*"
+          Resource: '*'
 
 functions:
   app:
     handler: app.handler
+    timeout: 120
     url: true
     environment:
       OPENAI_API_KEY: ${env:OPENAI_API_KEY}
