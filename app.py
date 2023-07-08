@@ -54,8 +54,9 @@ def chat(say, body):
     event = body["event"]
     channel = event["channel"]
     prompt = event["text"]
+    thread_ts = event["ts"]
 
-    say_response = say("Thinking...")
+    say_response = say("Thinking...", thread_ts=thread_ts)
     ts = say_response["ts"]
 
     callback = SlackStreamingCallbackHandler(channel=channel, ts=ts)
