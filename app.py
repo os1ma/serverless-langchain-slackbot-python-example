@@ -48,7 +48,7 @@ class SlackStreamingCallbackHandler(BaseCallbackHandler):
         app.client.chat_update(channel=self.channel, ts=self.ts, text=self.message)
 
 
-def chat(say, body):
+def handle_mention(say, body):
     logger.info("chat start")
 
     event = body["event"]
@@ -69,7 +69,7 @@ def just_ack(ack):
     ack()
 
 
-app.event("app_mention")(ack=just_ack, lazy=[chat])
+app.event("app_mention")(ack=just_ack, lazy=[handle_mention])
 
 
 def handler(event, context):
