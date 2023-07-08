@@ -49,7 +49,7 @@ class SlackStreamingCallbackHandler(BaseCallbackHandler):
 
 
 def handle_mention(say, body):
-    logger.info("chat start")
+    logger.info("handle_mention start")
 
     event = body["event"]
     channel = event["channel"]
@@ -62,7 +62,7 @@ def handle_mention(say, body):
     callback = SlackStreamingCallbackHandler(channel=channel, ts=ts)
     llm.predict(prompt, callbacks=[callback])
 
-    logger.info("chat end")
+    logger.info("handle_mention end")
 
 
 def just_ack(ack):
