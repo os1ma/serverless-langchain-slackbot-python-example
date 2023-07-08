@@ -13,7 +13,7 @@ CHAT_UPDATE_INTERVAL_SEC = 1
 
 SlackRequestHandler.clear_all_log_handlers()
 logging.basicConfig(
-    format="%(asctime)s [%(levelname)s] %(message)s", level=logging.INFO
+    format="%(asctime)s [%(levelname)s] %(message)s", level=logging.DEBUG
 )
 logger = logging.getLogger(__name__)
 
